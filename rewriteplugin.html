@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type='text/css'>
+	*{margin: 0; padding: 0;}
+
+
+	section:nth-child(1){
+		background-color: #00EBEF
+	}
+	section:nth-child(2){
+		background-color:#419FD8
+	}
+	section:nth-child(3){
+		background-color: #187195
+	}
+	section:nth-child(4){
+		background-color: #6DCCEF
+	}
+	section:nth-child(5){
+		background-color: #92E8E1
+	}
+	section:nth-child(6){
+		background-color: #1291FE
+	}
+	section:nth-child(7){
+		background-color: #1A8884
+	}
+	section:nth-child(8){
+		background-color: #1FD8C6
+	}
+	section:nth-child(9){
+		background-color: #5AACD8
+	}
+	section:nth-child(10){
+		background-color: #80CED8
+	}
+	section:nth-child(11){
+		background-color: #4FD8D3
+	}
+	section:nth-child(12){
+		background-color: #1FB3D8
+	}
+	section:nth-child(13){
+		background-color: #71D8CB
+	}
+	</style>
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+
+</head>
+<body>
+<div class="container">
+	<section class="active"></section>
+	<section></section>
+	<section></section>
+	<section></section>
+	<section></section>
+	<section></section>
+	<section></section>
+
+	<section></section>
+	<section></section>
+	<section></section>
+	<section></section>
+	<section></section>
+	<section></section>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+
+	$(document).ready(function($) {
+
+
+
+
+
+
+
+
+	var one_page_scroll = function (){
+
+
+
+		// KEY VARIABLES
+		var transition_duration = '.4s';
+		var target = $('section .active').index();
+		var timeNow = 0;
+		var num_of_sections = $('section').length;
+		var transitionEndType = whatTransition();
+		var sections = document.getElementsByTagName('section');
+
+
+
+
+		var init = function (){
+
+				if($('section').attr('data-height') == null){
+
+					sections_data();
+				}
+
+					initPageScroll();
+					disable_arrow();
+					responsive_section();
+
+
+		}
+
+		// CONFIG HEIGHT AND TOP POSITION
+		
+			var config = function (){
+
+				$('.container').css('transition', transition_duration);
+
+				$('section').each(function (index){
+
+					$(this).css({
+						'top': index*window.innerHeight+'px',
+						'height': window.innerHeight+'px'
+					});
+
+				});
+
+			}
+
+
+			config();
+
+
+	
+
+//// Initializes main page scroll action.
+
+	var initPageScroll =  function (){
+
+			$(document).bind('mousewheel  DomMouseScroll MozMousePixelScroll', function (event){
+				$('body').css('overflow', 'hidden');
+				event.preventDefault();
+				event.stopPropagation();
+
+				var delta  = event.originalEvent.wheelDelta || -event.originalEvent.detail;
+
+				var animationStart = new Date().getTime();
+
+					if((timeNow+1400) > animationStart){
+						event.preventDefault();
+						event.stopPropagation();
+						return false;
+
+						return;
+					}
+				
+					else{
+							delta < 0 ? moveUp() : moveDown();
+					}
+				
+				timeNow = animationStart;
+
+			});
+
+	}
+
+
+
+
+			var classChange = function (target){
+
+				$('section').removeClass('active').eq(target).addClass('active');
+
+
+				$('.title-itself').removeClass('dash').eq(target).addClass('dash');
+
+
+				$('.container').bind('webkitTransitionEnd transitionend  oTransitionEnd msTransitionEnd', function(){
+
+						$('.animator').removeClass('flipIn').eq(target).addClass('flipIn');
+
+				});
+
+
+
+				transition_end_animations('.title-itself', '.left_designer', 'opaque', target);
+				transition_end_animations('.title-itself', '.right_designer', 'opaque', target);
+				transition_end_animations('.left_designer', '.statement', 'movingleft', target);
+
+
+
+			}
+
+
+			var transition_end_animations = function (element, element2, class1, target){
+					$(element).bind('webkitAnimationEnd animationend', function (){
+						$(element2).removeClass(class1).eq(target).addClass(class1);
+					});
+			}
+
+
+			var moveUp = function (){
+
+				target++;
+				target === num_of_sections ? target = 0 : target+1;
+				classChange(target);
+				pageTrans();
+
+			}
+
+
+			var moveDown = function (){
+
+				target--;
+				target === num_of_sections ? target = 0 : target-1;
+				classChange(target);
+				pageTrans();	
+
+			}
+
+
+
+			var pageTrans = function (){
+				var pos = $('section.active').attr('data-height');
+				$('.container').css({'transform': 'translate3d(0,-'+pos+'px, 0)'});
+				$('.container').css({'-webkit-transform': 'translate3d(0,-'+pos+'px, 0)'});
+				$('.container').css({'-moz-transform': 'translate3d(0,-'+pos+'px, 0)'});
+				$('.container').css({'-ms-transform': 'translate3d(0,-'+pos+'px, 0)'});
+
+			}
+
+
+			var sections_data = function (){
+
+				var sections = document.getElementsByTagName('section');
+				for(var i = 0; i < sections.length; i++){
+					sections[i].setAttribute('data-height', sections[i].offsetTop);
+				}
+
+			}
+
+
+
+
+			function whatTransition(){
+				var e = document.createElement('div');
+				if(e.style.webkitTransition) return 'webkitTransitionEnd';
+			
+				if(e.style.oTransition) return 'oTransitionEnd';
+				
+				return 'transtionEnd';
+				
+			}
+
+
+
+
+/////// Arrow keyboards event
+
+
+
+
+
+/////// Adds responsiveness via window.height.
+
+
+		var responsive_section = function (){
+
+				window.addEventListener('resize', function (){
+
+					for(var i = 0; i < sections.length; i++){
+						sections[i].style.height = window.outterHeight+'px';
+						sections[i].style.width = window.innerWidth+'px';
+
+					}
+
+				});
+
+		}
+
+
+
+
+/////// Disable_arrow : disables arrow key board and space bar navigation. 
+
+		var disable_arrow = function (){
+
+				$(window).keydown(function (e){
+
+					if([40, 30, 32, 38].indexOf(e.keyCode) > -1){
+							e.preventDefault();
+					}						
+				});
+		}
+
+
+////// Init 
+
+		
+
+	init();
+
+
+
+		
+
+
+
+
+
+
+
+}
+
+one_page_scroll();
+
+});
+
+
+
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
