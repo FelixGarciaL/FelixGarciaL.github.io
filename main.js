@@ -1,8 +1,8 @@
-  	$(document).ready(function($) {
+	$(document).ready(function($) {
 
 
-
-
+//////				ONE PAGE SCROLL		///////////////
+		
 
 
 	var one_page_scroll = function (){
@@ -10,11 +10,15 @@
 
 
 		// KEY VARIABLES
-		var target = 0; //$('section .active').index();
+		var transition_duration = '.4s';
+		var target = 0;
 		var timeNow = 0;
+		var y_start;
 		var num_of_sections = $('section').length;
 		var transitionEndType = whatTransition();
 		var sections = document.getElementsByTagName('section');
+
+
 
 
 		var init = function (){
@@ -27,8 +31,6 @@
 					initPageScroll();
 					disable_arrow();
 					responsive_section();
-					menu_scroll();
-					space_bar();
 
 
 		}
@@ -37,16 +39,14 @@
 		
 			var config = function (){
 
+				$('.container').css('transition', transition_duration);
+
 				$('section').each(function (index){
 
 					$(this).css({
 						'top': index*window.innerHeight+'px',
 						'height': window.innerHeight+'px'
 					});
-
-					$(this).find('.animator').css({
-						'height': '90%'
-					})
 
 				});
 
@@ -55,29 +55,8 @@
 
 			config();
 
-			$(window).resize(function (){
-				config();
-			});
 
-		var menu_scroll = function (){
-
-			$('.menu-item').bind('click', function (){
-
-				close_Menu();
-
-				var that = $(this);
-
-
-				target = parseInt($(this).attr('data-page'));
-				classChange(target);
-				pageTrans();
-
-			});
-
-		}
-
-
-
+	
 
 //// Initializes main page scroll action.
 
@@ -112,66 +91,44 @@
 
 
 
-			var transition_end_animations = function (element, element2, class1, target){
-					$(element).bind('webkitAnimationEnd animationend oAnimationEnd msAnimationEnd', function (){
-						$(element2).removeClass(class1).eq(target).addClass(class1);
-					});
-			}
-
-
 
 			var classChange = function (target){
 
 				$('section').removeClass('active').eq(target).addClass('active');
 
 
-				//$('.title-itself').removeClass('dash').eq(target).addClass('dash');
+				$('.title-itself').removeClass('dash').eq(target).addClass('dash');
 
-				transition_end_animations('.container', '.absolute-text', 'absolute-shown', target);
+
 				$('.container').bind('webkitTransitionEnd transitionend  oTransitionEnd msTransitionEnd', function(){
 
 						$('.animator').removeClass('flipIn').eq(target).addClass('flipIn');
-						$('.ipad-wrapper img').removeClass('imgshown').eq(target).addClass('imgshown');
-						//$('.title-itself').removeClass('dash').eq(target).addClass('dash');
-						transition_end_animations('.animator', '.title-itself', 'dash', target);
-						transition_end_animations('.animator', '.intro-desc', 'text-shown', target);
-						
 
 				});
+
+
+
+				transition_end_animations('.title-itself', '.left_designer', 'flipMore', target);
+				transition_end_animations('.title-itself', '.right_designer', 'opaque', target);
+
+
 
 
 			}
 
 
-			var animation_fun = function (number){
-
-				$('.title-itself').bind('webkitAnimationEnd animationEnd', function (number){
-
-						console.log(number);
-
-						if(target == 1){
-							$('.intro-desc').removeClass('hideme').addClass('showme');
-							$('.ipad-wrapper img').removeClass('imghidden').addClass('imgshown');
-						}
-
-						else{
-							$('.intro-desc').removeClass('showme').addClass('hideme');
-							$('.ipad-wrapper img').removeClass('imgshown').addClass('imghidden');
-
-						}
-
-				});
+			var transition_end_animations = function (element, element2, class1, target){
+					$(element).bind('webkitAnimationEnd animationend', function (){
+						$(element2).removeClass(class1).eq(target).addClass(class1);
+					});
 			}
-
-
-
 
 
 			var moveUp = function (){
 
-				
-				target === num_of_sections ? target = 0 : target = target + 1;
-				//console.log(target);
+				target === num_of_sections ? target = 0 : target = target+1;
+				console.log(target);
+				console.log('total '+num_of_sections);
 				classChange(target);
 				pageTrans();
 
@@ -179,8 +136,10 @@
 
 
 			var moveDown = function (){
-			
-				target === num_of_sections ? target = 0 : target = target - 1;
+
+				target === num_of_sections ? target = 0 : target = target-1;
+				console.log(target);
+				console.log('total '+num_of_sections);
 				classChange(target);
 				pageTrans();	
 
@@ -207,9 +166,6 @@
 
 			}
 
-			$(window).resize(function(){
-				sections_data();
-			})
 
 
 
@@ -228,15 +184,7 @@
 
 /////// Arrow keyboards event
 
-		var arrow_events = function (){
 
-			$(document).keydown(function (e){
-				var tag = e.target;
-				console.log(tag);
-			});
-		}
-
-		arrow_events();
 
 
 
@@ -258,7 +206,65 @@
 		}
 
 
+/////  DOES ALL THE MENU SCROOLING ON CLICK AND TOUCH
 
+			var menu_scroll = function (){
+
+				$('.menu-item').bind('click', function (){
+
+					close_Menu();
+
+					var that = $(this);
+
+
+					target = parseInt($(this).attr('data-page'));
+					classChange(target);
+					pageTrans();
+
+				});
+
+			}
+
+			menu_scroll();
+
+
+			var menu_scroll_touch = function (){
+
+				close_Menu();
+
+				var that = $(this);
+
+					target = parseInt($(this).attr('data-page'));
+					classChange(target);
+					pageTrans();				
+
+			}
+
+			var item_a_menu = document.querySelectorAll('menu-item');
+
+
+			for(var i = 0; i < item_a_menu.length; i++){
+				item_a_menu.addEventListener('touchstart', menu_scroll_touch, false);
+			}
+
+
+				var menu_items = document.getElementsByClassName('menu-item');
+
+
+				for(var i = 0; i < menu_items.length; i++){
+					menu_items[i].addEventListener('touchstart', function (){
+
+					close_Menu();
+
+					var that = $(this);
+
+
+					target = parseInt($(this).attr('data-page'));
+					classChange(target);
+					pageTrans();
+
+					});
+				}
 
 /////// Disable_arrow : disables arrow key board and space bar navigation. 
 
@@ -266,59 +272,12 @@
 
 				$(window).keydown(function (e){
 
-					if([30].indexOf(e.keyCode) > -1){
+					if([40, 30, 32, 38].indexOf(e.keyCode) > -1){
 							e.preventDefault();
-					}
-
-					else if([40].indexOf(e.keyCode) > -1){
-
-						if($('#message_body').is(':focus')){
-							return true;
-						}
-
-						else{
-							e.preventDefault();
-							moveUp();						
-					}
-
-					}
-					else if([38].indexOf(e.keyCode) > -1){
-						if($('#message_body').is(':focus')){
-							return true;
-						}
-
-						else{
-							e.preventDefault();
-							moveDown();						
-						}
-					}
-
-
+					}						
 				});
 		}
 
-
-		var space_bar = function (){
-
-			$(window).keydown(function (e){
-				if([32].indexOf(e.keyCode) > -1){
-					if($('#message_body').is(':focus')){
-						return true;
-					}
-
-					else{
-						e.preventDefault();
-						moveUp();						
-					}
-
-				}
-
-			})
-
-		}
-
-
-////// Init 
 
 
 
@@ -362,7 +321,20 @@
 
 
 
+
+////// Init 
+
+		
+
 	init();
+
+
+
+		
+
+
+
+
 
 
 
@@ -375,8 +347,6 @@ one_page_scroll();
 
 
 
-//////				MENU 			///////////////
-		
 
 		function close_Menu(){
 
@@ -398,7 +368,7 @@ one_page_scroll();
 		}
 
 
-		$('#menu').bind('click', function (){
+		function open_Menu(){
 
 			$('#menu-display').toggleClass('active-menu');
 
@@ -428,34 +398,45 @@ one_page_scroll();
 
 						close_Menu();
 				}
-				
 
-		});
-
+		}
 
 
+		$('#menu').bind('click', open_Menu);
 
 
+		var menu = document.getElementById("menu");
 
-		//menu_scroll();
-
-
-
+		menu.addEventListener('touchstart', open_Menu, false);
 
 
+		var a_touch_tag = function (){
+			var a_touch = document.querySelectorAll('menu-portfolio');
 
+			for(var i = 0; i < a_touch.length; i++){
 
+				a_touch[i].addEventListener('touchstart', function (){
+					var loc = this.getAttribute('href');
+					window.location = loc;
+				})
+			}
 
+		}
 
+		a_touch_tag();
 
+		var touch_port = function (){
+			var a = document.querySelectorAll('box-left');
 
+			for(var i = 0; i < a.length; i++){
+				a[i].addEventListener('touchstart', function (){
+					var loc = this.getAttribute('href');
+					window.location = loc;
+				})
+			}
+		}
 
-
-
-
-
-
-
+		touch_port();
 
 
 
